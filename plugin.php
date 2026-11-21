@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: WP REST API filter parameter
- * Plugin URI:  https://github.com/hideokamoto/rest-filter
+ * Plugin Name: WP API REST Filter
+ * Plugin URI:  https://github.com/hideokamoto/wp-api-rest-filter
  * Description: Adds a "filter" query parameter to REST API post collections to filter returned results based on a whitelist of public WP_Query parameters, restoring the "filter" parameter that was removed from the API when it was merged into WordPress core. Fork of WP-API/rest-filter (unmaintained upstream).
  * Author:      WP REST API Team, Hidetaka Okamoto
  * Author URI:  https://github.com/hideokamoto
- * Version:     1.1.0
+ * Version:     1.2.0
  * Requires at least: 4.7
  * Requires PHP:      7.4
  * License:     GPL2+
