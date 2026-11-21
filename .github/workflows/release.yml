@@ -27,13 +27,18 @@ jobs:
 
       - name: Build plugin zip
         run: |
+          version="${GITHUB_REF_NAME#v}"
           mkdir -p /tmp/pkg/rest-filter
-          cp -r plugin.php includes README.md /tmp/pkg/rest-filter/
-          cd /tmp/pkg && zip -qr "$GITHUB_WORKSPACE/rest-filter.zip" rest-filter
-          unzip -l "$GITHUB_WORKSPACE/rest-filter.zip"
+          git archive --format=tar HEAD | tar -x -C /tmp/pkg/rest-filter
+          cd /tmp/pkg
+          zip -qr "$GITHUB_WORKSPACE/rest-filter-v${version}.zip" rest-filter
+          cd "$GITHUB_WORKSPACE"
+          sha256sum "rest-filter-v${version}.zip" > "rest-filter-v${version}.zip.sha256"
+          unzip -l "rest-filter-v${version}.zip"
+          cat "rest-filter-v${version}.zip.sha256"
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: rest-filter.zip
+          files: rest-filter-v*.zip*
           generate_release_notes: true
