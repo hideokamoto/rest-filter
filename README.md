@@ -26,14 +26,32 @@ GET /wp-json/wp/v2/posts?filter[meta_key]=color&filter[meta_value]=blue
 ```
 
 Additional allowed vars: `meta_query`, `meta_key`, `meta_value`, `meta_compare`.
-Plugins can extend the whitelist via the `rest_query_vars` filter.
+Plugins can extend the whitelist via the `rest_query_vars` filter (always
+applied last, so code can recover a broken option).
+
+## Whitelist configuration (v1.1)
+
+The set of query vars accepted inside `filter[...]` is configurable. All three
+surfaces manage the same `rest_filter_allowed_vars` option — an array of var
+names that **replaces** the default set (public `WP_Query` vars + meta vars)
+when present:
+
+- **wp-admin**: Settings → REST Filter (one var per line; risky vars like
+  `post_status`/`meta_*` get a warning; empty input is refused)
+- **wp-cli**: `wp rest-filter vars list|add|remove|set|reset`
+- **wp-api**: `GET`/`PATCH /wp-json/rest-filter/v1/vars` — requires
+  `manage_options`, so anonymous callers can never widen the whitelist
+
+When the option is unset the plugin behaves exactly like the upstream original
+(every public query var + meta vars). Tighten it per site, e.g. to
+`lang`, `order`, `posts_per_page`.
 
 ## Security note
 
-`filter` exposes every *public* `WP_Query` var plus meta queries to
-unauthenticated API callers — that includes `post_status` and potentially
-expensive `meta_query` conditions. That is exactly why core removed it. Keep
-the whitelist tight via `rest_query_vars` if you don't need the full set.
+`filter` exposes *public* `WP_Query` vars plus meta queries to unauthenticated
+API callers — that includes `post_status` and potentially expensive
+`meta_query` conditions. That is exactly why core removed it. The whitelist
+option exists to scope this down per site; keep it tight.
 
 ## Development
 

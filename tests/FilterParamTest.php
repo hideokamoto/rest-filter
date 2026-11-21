@@ -4,6 +4,11 @@ use PHPUnit\Framework\TestCase;
 
 class FilterParamTest extends TestCase {
 
+	protected function setUp(): void {
+		$GLOBALS['_rest_options']      = array();
+		$GLOBALS['_rest_filter_hooks'] = array();
+	}
+
 	private function request( $filter ) {
 		return new ArrayObject( array( 'filter' => $filter ) );
 	}
@@ -58,6 +63,15 @@ class FilterParamTest extends TestCase {
 		$this->assertSame( $meta, $args['meta_query'] );
 		$this->assertSame( 'color', $args['meta_key'] );
 		$this->assertSame( '=', $args['meta_compare'] );
+	}
+
+	public function test_posts_per_page_ignored_when_not_whitelisted() {
+		update_option( REST_FILTER_OPTION, array( 'order' ), false );
+		$args = rest_api_filter_add_filter_param(
+			array( 'posts_per_page' => 10 ),
+			$this->request( array( 'posts_per_page' => '50' ) )
+		);
+		$this->assertSame( 10, $args['posts_per_page'] );
 	}
 
 	public function test_rest_query_vars_filter_can_extend_allowed_vars() {

@@ -2,10 +2,10 @@
 /**
  * Plugin Name: WP REST API filter parameter
  * Plugin URI:  https://github.com/hideokamoto/rest-filter
- * Description: Adds a "filter" query parameter to REST API post collections to filter returned results based on public WP_Query parameters, restoring the "filter" parameter that was removed from the API when it was merged into WordPress core. Fork of WP-API/rest-filter (unmaintained upstream).
+ * Description: Adds a "filter" query parameter to REST API post collections to filter returned results based on a whitelist of public WP_Query parameters, restoring the "filter" parameter that was removed from the API when it was merged into WordPress core. Fork of WP-API/rest-filter (unmaintained upstream).
  * Author:      WP REST API Team, Hidetaka Okamoto
  * Author URI:  https://github.com/hideokamoto
- * Version:     1.0.0
+ * Version:     1.1.0
  * Requires at least: 4.7
  * Requires PHP:      7.4
  * License:     GPL2+
@@ -15,6 +15,11 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+require_once __DIR__ . '/includes/vars.php';
+require_once __DIR__ . '/includes/rest-api.php';
+require_once __DIR__ . '/includes/cli.php';
+require_once __DIR__ . '/includes/admin.php';
 
 add_action( 'rest_api_init', 'rest_api_filter_add_filters' );
 
@@ -27,7 +32,11 @@ add_action( 'rest_api_init', 'rest_api_filter_add_filters' );
  * @return array The merged query arguments.
  */
 function rest_api_filter_merge_query_vars( $args, $filter, $allowed_vars ) {
-	if ( isset( $filter['posts_per_page'] ) && ( (int) $filter['posts_per_page'] >= 1 && (int) $filter['posts_per_page'] <= 100 ) ) {
+	if (
+		in_array( 'posts_per_page', $allowed_vars, true )
+		&& isset( $filter['posts_per_page'] )
+		&& ( (int) $filter['posts_per_page'] >= 1 && (int) $filter['posts_per_page'] <= 100 )
+	) {
 		$args['posts_per_page'] = (int) $filter['posts_per_page'];
 	}
 
@@ -64,11 +73,5 @@ function rest_api_filter_add_filter_param( $args, $request ) {
 		return $args;
 	}
 
-	global $wp;
-	$vars = apply_filters( 'rest_query_vars', $wp->public_query_vars );
-
-	// Allow valid meta query vars.
-	$vars = array_unique( array_merge( $vars, array( 'meta_query', 'meta_key', 'meta_value', 'meta_compare' ) ) );
-
-	return rest_api_filter_merge_query_vars( $args, $request['filter'], $vars );
+	return rest_api_filter_merge_query_vars( $args, $request['filter'], rest_filter_allowed_vars() );
 }
