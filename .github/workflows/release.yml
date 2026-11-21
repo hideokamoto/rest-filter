@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Run tests
+        run: |
+          composer install --no-interaction --prefer-dist
+          composer lint
+          composer test
+
+      - name: Build plugin zip
+        run: |
+          mkdir -p /tmp/pkg/rest-filter
+          cp -r plugin.php includes README.md /tmp/pkg/rest-filter/
+          cd /tmp/pkg && zip -qr "$GITHUB_WORKSPACE/rest-filter.zip" rest-filter
+          unzip -l "$GITHUB_WORKSPACE/rest-filter.zip"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: rest-filter.zip
+          generate_release_notes: true
