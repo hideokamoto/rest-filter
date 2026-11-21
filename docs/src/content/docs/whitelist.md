@@ -33,12 +33,22 @@ posts_per_page
 add_filter( 'rest_query_vars', fn( $vars ) => [ 'lang', 'order' ] );
 ```
 
+## 投稿タイプのスコープ（v1.3〜）
+
+`rest_filter_post_types` option で `filter` を受け付ける投稿タイプを絞れます。
+
+- **未設定**: `show_in_rest` な全タイプ（upstream 互換のデフォルト）
+- **配列**: そのタイプのみ（登録されていない・REST 非対応のタイプ名は無視される）
+- **空配列**: 全タイプで `filter` 無効
+
+対象外タイプへの `filter` は黙って無視されます（エラーにはなりません）。コード側の `rest_filter_post_types` フィルタが常に最後に適用されます。
+
 ## 設定できる3つの面
 
 どの面から設定しても同じ option を読み書きします。
 
-| 面 | 方法 | 権限 |
-| --- | --- | --- |
-| wp-admin | Settings → REST Filter | `manage_options` |
-| wp-cli | `wp rest-filter vars ...` | CLI 実行権限 |
-| wp-api | `GET`/`PATCH /wp-json/rest-filter/v1/vars` | `manage_options`（未認証は不可） |
+| 面 | クエリ変数 whitelist | 投稿タイプスコープ | 権限 |
+| --- | --- | --- | --- |
+| wp-admin | Settings → REST Filter | 同ページ下部のチェックボックス | `manage_options` |
+| wp-cli | `wp rest-filter vars ...` | `wp rest-filter post-types ...` | CLI 実行権限 |
+| wp-api | `/wp-json/rest-filter/v1/vars` | `/wp-json/rest-filter/v1/post-types` | `manage_options`（未認証は不可） |
