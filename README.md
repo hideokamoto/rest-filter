@@ -1,4 +1,4 @@
-# WP REST API — `filter` parameter for posts endpoints
+# WP API REST Filter
 
 Restores the `filter` query parameter on REST API post-collection endpoints
 (`/wp-json/wp/v2/posts`, `/wp-json/wp/v2/pages`, custom post types with
@@ -45,6 +45,13 @@ when present:
 When the option is unset the plugin behaves exactly like the upstream original
 (every public query var + meta vars). Tighten it per site, e.g. to
 `lang`, `order`, `posts_per_page`.
+
+## Naming
+
+The plugin directory/slug is `wp-api-rest-filter`. Functional names are kept
+stable for backwards compatibility: the WP-CLI command stays
+`wp rest-filter vars`, the management route stays `/wp-json/rest-filter/v1/vars`,
+and the option stays `rest_filter_allowed_vars`.
 
 ## Security note
 

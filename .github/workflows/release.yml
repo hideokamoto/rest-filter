@@ -28,17 +28,17 @@ jobs:
       - name: Build plugin zip
         run: |
           version="${GITHUB_REF_NAME#v}"
-          mkdir -p /tmp/pkg/rest-filter
-          git archive --format=tar HEAD | tar -x -C /tmp/pkg/rest-filter
+          mkdir -p /tmp/pkg/wp-api-rest-filter
+          git archive --format=tar HEAD | tar -x -C /tmp/pkg/wp-api-rest-filter
           cd /tmp/pkg
-          zip -qr "$GITHUB_WORKSPACE/rest-filter-v${version}.zip" rest-filter
+          zip -qr "$GITHUB_WORKSPACE/wp-api-rest-filter-v${version}.zip" wp-api-rest-filter
           cd "$GITHUB_WORKSPACE"
-          sha256sum "rest-filter-v${version}.zip" > "rest-filter-v${version}.zip.sha256"
-          unzip -l "rest-filter-v${version}.zip"
-          cat "rest-filter-v${version}.zip.sha256"
+          sha256sum "wp-api-rest-filter-v${version}.zip" > "wp-api-rest-filter-v${version}.zip.sha256"
+          unzip -l "wp-api-rest-filter-v${version}.zip"
+          cat "wp-api-rest-filter-v${version}.zip.sha256"
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: rest-filter-v*.zip*
+          files: wp-api-rest-filter-v*.zip*
           generate_release_notes: true
