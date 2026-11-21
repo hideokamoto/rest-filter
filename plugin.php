@@ -10,6 +10,8 @@
  * Requires PHP:      7.4
  * License:     GPL2+
  * Update URI:  false
+ *
+ * @package RestFilter
  **/
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/includes/vars.php';
 require_once __DIR__ . '/includes/rest-api.php';
-require_once __DIR__ . '/includes/cli.php';
+require_once __DIR__ . '/includes/class-rest-filter-vars-command.php';
 require_once __DIR__ . '/includes/admin.php';
 
 add_action( 'rest_api_init', 'rest_api_filter_add_filters' );

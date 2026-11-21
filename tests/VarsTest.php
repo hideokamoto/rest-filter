@@ -15,7 +15,29 @@ class VarsTest extends TestCase {
 		$this->assertContains( 'order', $vars );
 		$this->assertContains( 'lang', $vars );
 		$this->assertContains( 'meta_query', $vars );
+		// posts_per_page is a *private* WP_Query var but is intentionally
+		// exposed (with clamping), matching the original plugin's behaviour.
+		$this->assertContains( 'posts_per_page', $vars );
 		$this->assertSame( $vars, array_unique( $vars ) );
+	}
+
+	public function test_default_includes_vars_added_via_core_query_vars_filter() {
+		// Plugins like bogo add public vars (e.g. `lang`) through the core
+		// `query_vars` filter, which only runs in WP::parse_request(). The
+		// whitelist must see them in every context (admin, REST, CLI).
+		add_filter(
+			'query_vars',
+			function ( $vars ) {
+				$vars[] = 'plugin_added_var';
+				return $vars;
+			}
+		);
+		$this->assertContains( 'plugin_added_var', rest_filter_default_allowed_vars() );
+	}
+
+	public function test_empty_option_falls_back_to_default() {
+		update_option( REST_FILTER_OPTION, array(), false );
+		$this->assertSame( rest_filter_default_allowed_vars(), rest_filter_allowed_vars() );
 	}
 
 	public function test_option_replaces_default_set() {

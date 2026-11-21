@@ -107,7 +107,7 @@ $GLOBALS['wp']                    = new stdClass();
 $GLOBALS['wp']->public_query_vars = array(
 	'p', 'page_id', 'pagename', 's', 'cat', 'tag', 'author_name',
 	'year', 'monthnum', 'day', 'w', 'm', 'post_type', 'name',
-	'order', 'orderby', 'posts_per_page', 'lang', 'post_status',
+	'order', 'orderby', 'lang', 'post_status',
 );
 
 require_once dirname( __DIR__ ) . '/plugin.php';

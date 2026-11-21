@@ -1,9 +1,18 @@
 <?php
 /**
  * Allowed query-var whitelist: computation, option storage, sanitization.
+ *
+ * @package RestFilter
  */
 
-const REST_FILTER_OPTION    = 'rest_filter_allowed_vars';
+/**
+ * Option name storing the whitelist override.
+ */
+const REST_FILTER_OPTION = 'rest_filter_allowed_vars';
+
+/**
+ * Meta query vars allowed on top of public query vars.
+ */
 const REST_FILTER_META_VARS = array( 'meta_query', 'meta_key', 'meta_value', 'meta_compare' );
 
 /**
@@ -11,13 +20,21 @@ const REST_FILTER_META_VARS = array( 'meta_query', 'meta_key', 'meta_value', 'me
  * drive expensive queries for anonymous API callers.
  */
 const REST_FILTER_RISKY_VARS = array(
-	'post_status', 'perm', 'has_password',
-	'meta_query', 'meta_key', 'meta_value', 'meta_compare',
+	'post_status',
+	'perm',
+	'has_password',
+	'meta_query',
+	'meta_key',
+	'meta_value',
+	'meta_compare',
 );
 
 /**
  * Default whitelist (used when the option is not set): every public WP_Query
- * var plus the meta query vars. Matches the historical plugin behaviour.
+ * var — including the ones plugins register through the core `query_vars`
+ * filter (e.g. bogo's `lang`), which WP only applies in `WP::parse_request()`
+ * — plus `posts_per_page` (a private query var the original plugin has always
+ * exposed with clamping) and the meta query vars.
  *
  * @return string[]
  */
@@ -26,7 +43,8 @@ function rest_filter_default_allowed_vars() {
 	$public = ( isset( $wp->public_query_vars ) && is_array( $wp->public_query_vars ) )
 		? $wp->public_query_vars
 		: array();
-	return array_values( array_unique( array_merge( $public, REST_FILTER_META_VARS ) ) );
+	$vars   = apply_filters( 'query_vars', $public );
+	return array_values( array_unique( array_merge( $vars, array( 'posts_per_page' ), REST_FILTER_META_VARS ) ) );
 }
 
 /**
@@ -69,7 +87,7 @@ function rest_filter_sanitize_var_names( $raw ) {
  */
 function rest_filter_allowed_vars() {
 	$saved = get_option( REST_FILTER_OPTION, null );
-	$vars  = is_array( $saved )
+	$vars  = ( is_array( $saved ) && ! empty( $saved ) )
 		? rest_filter_sanitize_var_names( $saved )
 		: rest_filter_default_allowed_vars();
 	return array_values( array_unique( apply_filters( 'rest_query_vars', $vars ) ) );
@@ -82,7 +100,7 @@ function rest_filter_allowed_vars() {
  * the whitelist can never be emptied by accident.
  *
  * @param  mixed $input Raw form value.
- * @return string[]
+ * @return array|string[]|false The sanitized list, or the previous option value.
  */
 function rest_filter_sanitize_option_input( $input ) {
 	$clean = rest_filter_sanitize_var_names( $input );
@@ -92,8 +110,7 @@ function rest_filter_sanitize_option_input( $input ) {
 			'rest_filter_empty',
 			'Allowed vars must contain at least one valid name; previous value kept.'
 		);
-		$previous = get_option( REST_FILTER_OPTION, null );
-		return is_array( $previous ) ? rest_filter_sanitize_var_names( $previous ) : array();
+		return get_option( REST_FILTER_OPTION, false );
 	}
 	return $clean;
 }

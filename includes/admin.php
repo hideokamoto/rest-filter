@@ -1,11 +1,18 @@
 <?php
 /**
- * wp-admin surface: Settings > REST Filter.
+ * Wp-admin surface: Settings > REST Filter.
+ *
+ * @package RestFilter
  */
 
 add_action( 'admin_menu', 'rest_filter_register_settings_page' );
 add_action( 'admin_init', 'rest_filter_register_setting' );
 
+/**
+ * Register the options page under Settings.
+ *
+ * @return void
+ */
 function rest_filter_register_settings_page() {
 	add_options_page(
 		'REST Filter',
@@ -16,6 +23,11 @@ function rest_filter_register_settings_page() {
 	);
 }
 
+/**
+ * Register the whitelist option with the Settings API.
+ *
+ * @return void
+ */
 function rest_filter_register_setting() {
 	register_setting(
 		'rest_filter',
@@ -27,6 +39,11 @@ function rest_filter_register_setting() {
 	);
 }
 
+/**
+ * Render the whitelist editor (one var per line) with status and warnings.
+ *
+ * @return void
+ */
 function rest_filter_render_settings_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;

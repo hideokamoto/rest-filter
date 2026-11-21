@@ -14,6 +14,15 @@ class CliTest extends TestCase {
 		return new Rest_Filter_Vars_Command();
 	}
 
+	public function test_reserved_subcommands_have_subcommand_tags() {
+		// WP-CLI maps method names literally; `list_`/`set_` become `list`/`set`
+		// only via the @subcommand docblock tag.
+		foreach ( array( 'list_' => 'list', 'set_' => 'set' ) as $method => $subcommand ) {
+			$doc = ( new ReflectionMethod( 'Rest_Filter_Vars_Command', $method ) )->getDocComment();
+			$this->assertStringContainsString( "@subcommand {$subcommand}", $doc );
+		}
+	}
+
 	public function test_command_is_registered() {
 		$this->assertArrayHasKey( 'rest-filter vars', $GLOBALS['_wp_cli_commands'] );
 	}

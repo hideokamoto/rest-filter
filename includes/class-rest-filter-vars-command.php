@@ -3,16 +3,26 @@
  * WP-CLI surface: `wp rest-filter vars <list|add|remove|reset|set>`.
  *
  * Thin wrapper over the same option the admin page and REST route manage.
+ *
+ * @package RestFilter
  */
 
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	return;
 }
 
+/**
+ * `wp rest-filter vars` subcommands.
+ */
 class Rest_Filter_Vars_Command extends WP_CLI_Command {
 
 	/**
 	 * List the effective whitelist (one var per line, preceded by its source).
+	 *
+	 * @subcommand list
+	 * @param array $args       Positional arguments (unused).
+	 * @param array $assoc_args Named arguments (unused).
+	 * @return void
 	 */
 	public function list_( $args, $assoc_args ) {
 		$saved = get_option( REST_FILTER_OPTION, null );
@@ -29,6 +39,9 @@ class Rest_Filter_Vars_Command extends WP_CLI_Command {
 	 *
 	 * <var>...
 	 * : Query var name(s) to allow.
+	 *
+	 * @param array $args Var names to allow.
+	 * @return void
 	 */
 	public function add( $args ) {
 		$this->mutate( $args, true );
@@ -41,6 +54,9 @@ class Rest_Filter_Vars_Command extends WP_CLI_Command {
 	 *
 	 * <var>...
 	 * : Query var name(s) to disallow.
+	 *
+	 * @param array $args Var names to disallow.
+	 * @return void
 	 */
 	public function remove( $args ) {
 		$this->mutate( $args, false );
@@ -53,6 +69,10 @@ class Rest_Filter_Vars_Command extends WP_CLI_Command {
 	 *
 	 * <var>...
 	 * : The complete list of query var names to allow.
+	 *
+	 * @subcommand set
+	 * @param array $args The complete list of var names to allow.
+	 * @return void
 	 */
 	public function set_( $args ) {
 		$clean = rest_filter_sanitize_var_names( $args );
@@ -65,12 +85,21 @@ class Rest_Filter_Vars_Command extends WP_CLI_Command {
 
 	/**
 	 * Delete the option so the plugin falls back to the default whitelist.
+	 *
+	 * @return void
 	 */
 	public function reset() {
 		delete_option( REST_FILTER_OPTION );
 		WP_CLI::success( 'Whitelist reset to defaults.' );
 	}
 
+	/**
+	 * Add vars to or remove vars from the whitelist option.
+	 *
+	 * @param array $vars Var names to add or remove.
+	 * @param bool  $add  True to add, false to remove.
+	 * @return void
+	 */
 	private function mutate( $vars, $add ) {
 		$clean_in = rest_filter_sanitize_var_names( $vars );
 		if ( empty( $clean_in ) ) {
