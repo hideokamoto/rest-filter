@@ -7,6 +7,8 @@ Restores the `filter` query parameter on REST API post-collection endpoints
 Fork of [WP-API/rest-filter](https://github.com/WP-API/rest-filter), which is
 unmaintained. This fork is actively maintained for wp-kyoto.net.
 
+**Docs**: https://hideokamoto.github.io/wp-api-rest-filter/
+
 ## Why this plugin exists
 
 In WordPress 4.7 the `filter` argument was deliberately removed when the REST
