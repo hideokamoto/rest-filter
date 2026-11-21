@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ruleset name="rest-filter">
+	<description>WordPress Coding Standards + PHP compatibility for rest-filter.</description>
+
+	<file>plugin.php</file>
+	<file>includes</file>
+
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	<arg name="colors"/>
+
+	<!-- WordPress coding standards -->
+	<rule ref="WordPress-Core"/>
+	<rule ref="WordPress-Docs"/>
+	<rule ref="WordPress-Extra"/>
+
+	<!-- PHP 7.4+ compatibility -->
+	<rule ref="PHPCompatibilityWP"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<!-- The plugin ships intentionally non-i18n strings. -->
+	<exclude name="WordPress.WP.I18n"/>
+	<!-- File naming convention (plugin.php instead of class-*.php). -->
+	<exclude name="WordPress.Files.FileName"/>
+</ruleset>
