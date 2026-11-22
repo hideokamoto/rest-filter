@@ -55,3 +55,18 @@ wp rest-filter vars reset
 ## 変数名のルール
 
 `^[a-zA-Z0-9_-]+$` に一致する名前のみ有効です。重複は自動で除去されます。
+
+## `wp rest-filter post-types`
+
+`filter` を受け付ける投稿タイプのスコープを操作します。
+
+```bash
+wp rest-filter post-types list      # 有効なタイプと出所 (option/default)
+wp rest-filter post-types set post page   # スコープを丸ごと置き換え
+wp rest-filter post-types add page        # 追加
+wp rest-filter post-types remove event    # 削除
+wp rest-filter post-types disable         # 全タイプで filter 無効（空配列を保存）
+wp rest-filter post-types reset           # option 削除 → 全タイプに戻す
+```
+
+REST 非対応のタイプ名（`show_in_rest` が false、未登録）は自動で落とされます。

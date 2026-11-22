@@ -48,6 +48,20 @@ When the option is unset the plugin behaves exactly like the upstream original
 (every public query var + meta vars). Tighten it per site, e.g. to
 `lang`, `order`, `posts_per_page`.
 
+## Post-type scope (v1.3)
+
+`rest_filter_post_types` option controls which post types accept `filter`.
+Unset = every `show_in_rest` type (upstream-compatible); an array restricts
+the scope (non-REST types are dropped); an empty array disables `filter`
+entirely. All three surfaces manage it:
+
+- **wp-admin**: Settings → REST Filter → 「filter を有効にする投稿タイプ」
+- **wp-cli**: `wp rest-filter post-types list|set|add|remove|disable|reset`
+- **wp-api**: `GET`/`PATCH`/`DELETE /wp-json/rest-filter/v1/post-types`
+  (`manage_options` required)
+
+Code can always override via the `rest_filter_post_types` filter (runs last).
+
 ## Naming
 
 The plugin directory/slug is `wp-api-rest-filter`. Functional names are kept

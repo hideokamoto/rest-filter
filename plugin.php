@@ -5,7 +5,7 @@
  * Description: Adds a "filter" query parameter to REST API post collections to filter returned results based on a whitelist of public WP_Query parameters, restoring the "filter" parameter that was removed from the API when it was merged into WordPress core. Fork of WP-API/rest-filter (unmaintained upstream).
  * Author:      WP REST API Team, Hidetaka Okamoto
  * Author URI:  https://github.com/hideokamoto
- * Version:     1.2.0
+ * Version:     1.3.0
  * Requires at least: 4.7
  * Requires PHP:      7.4
  * License:     GPL2+
@@ -19,8 +19,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/includes/vars.php';
+require_once __DIR__ . '/includes/post-types.php';
 require_once __DIR__ . '/includes/rest-api.php';
 require_once __DIR__ . '/includes/class-rest-filter-vars-command.php';
+require_once __DIR__ . '/includes/class-rest-filter-post-types-command.php';
 require_once __DIR__ . '/includes/admin.php';
 
 add_action( 'rest_api_init', 'rest_api_filter_add_filters' );
@@ -57,8 +59,8 @@ function rest_api_filter_merge_query_vars( $args, $filter, $allowed_vars ) {
  * Add the necessary filter to each post type.
  **/
 function rest_api_filter_add_filters() {
-	foreach ( get_post_types( array( 'show_in_rest' => true ), 'objects' ) as $post_type ) {
-		add_filter( 'rest_' . $post_type->name . '_query', 'rest_api_filter_add_filter_param', 10, 2 );
+	foreach ( rest_filter_post_types() as $post_type ) {
+		add_filter( 'rest_' . $post_type . '_query', 'rest_api_filter_add_filter_param', 10, 2 );
 	}
 }
 

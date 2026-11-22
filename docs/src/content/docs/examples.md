@@ -36,6 +36,16 @@ curl -X PATCH "$SITE/wp-json/rest-filter/v1/vars" \
   -d '{"vars":["lang","order","posts_per_page"]}'
 ```
 
+## 投稿タイプを `post` だけに絞る
+
+カスタム投稿タイプのコレクションに `filter` を開かない場合:
+
+```bash
+wp rest-filter post-types set post
+```
+
+これで `/wp-json/wp/v2/pages` や自作タイプでは `filter` が無視されます。戻すなら `wp rest-filter post-types reset`。
+
 ## bogo（多言語）での利用
 
 bogo は `lang` を `query_vars` フィルタで公開変数に追加します。本プラグインのデフォルト計算は同じフィルタを適用するため、`lang` はデフォルトで利用可能です。whitelist を保存する場合は `lang` を忘れずに含めてください——含めないと `filter[lang]` が無言で無視されます。
