@@ -1,0 +1,30 @@
+name: Test
+
+# リリース（タグ・GitHub Release・zip）は、main へのマージで CircleCI の共通テンプレート
+# （hideokamoto/circleci-configurations の workflows/release/wordpress-plugin-github-release.yaml）が行う。
+# ここではリリース前に走っていた lint とテストだけを、PR と main への push で走らせる。
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Run lint and tests
+        run: |
+          composer install --no-interaction --prefer-dist
+          composer lint
+          composer test
