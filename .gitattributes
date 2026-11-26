@@ -8,3 +8,6 @@ composer.lock export-ignore
 phpcs.xml export-ignore
 phpunit.xml export-ignore
 vendor/ export-ignore
+# ドキュメントサイト（GitHub Pages）のソース。プラグインの動作には使わない
+docs/ export-ignore
+.circleci/ export-ignore
